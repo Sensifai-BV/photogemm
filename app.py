@@ -169,7 +169,7 @@ async def analyze_image_single(
         if parameter_choice == 12:
             processed_image = rule_of_thirds_preprocessor.process(data_input=Image.open(file.file))
             byte_buffer = io.BytesIO()
-            processed_image.save(byte_buffer, format="JPEG") 
+            processed_image.save(byte_buffer, format="PNG") 
             image_data = byte_buffer.getvalue()
             choosen_param = "Rule of Thirds"
             instruction = f"Analyze the image for the 'rule of thirds' parameter and provide the result as a JSON object."
@@ -178,7 +178,7 @@ async def analyze_image_single(
         elif parameter_choice == 59:
             processed_image = golden_rectangle_preprocessor.process(data_input=Image.open(file.file))
             byte_buffer = io.BytesIO()
-            processed_image.save(byte_buffer, format="JPEG") 
+            processed_image.save(byte_buffer, format="PNG") 
             image_data = byte_buffer.getvalue()
             choosen_param = "Golden Rectangle"
             instruction = f"Analyze the image for the 'golden rectangle' parameter and provide the result as a JSON object."
