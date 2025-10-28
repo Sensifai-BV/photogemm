@@ -5,7 +5,7 @@ class ModelConfig:
         self.boolean_lora_path = "my_lora_boolean"
         self.scoring_model_path = "my_scoring_lora"
         self.golden_rectangle_model_path = "my_gr_lora"
-        self.rule_of_thirds_model_path = ""
+        self.rule_of_thirds_model_path = "my_rot_lora"
         
         self.normnal_lora_names = [
             'Soft Focus',
@@ -92,6 +92,9 @@ class ModelConfig:
 
     def get_gr_model_path(self):
         return self.golden_rectangle_model_path
+    
+    def get_rot_model_path(self):
+        return self.rule_of_thirds_model_path
 
     def get_normal_lora_names(self):
         return self.normnal_lora_names

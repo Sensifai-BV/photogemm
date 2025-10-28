@@ -17,7 +17,7 @@ import json
 from enum import Enum, auto
 from handle_non_challenging_request import NonChallegingHandler
 from parameters_naming import ModelConfig
-from preprcessors import GoldenRectangle
+from preprcessors import GoldenRectangle, RuleOfThird
 
 # SAVE_DIR = './uploaded _photos'
 
@@ -61,7 +61,9 @@ client = OpenAI(
 non_challenging_handler = NonChallegingHandler()
 my_configs = ModelConfig()
 
+rule_of_thirds_preprocessor = RuleOfThird()
 golden_rectangle_preprocessor = GoldenRectangle()
+
 
 
 def image_to_base64_data_url(image: Image.Image, format: str = "JPEG") -> str:
@@ -164,13 +166,22 @@ async def analyze_image_single(
         
         image_data = await file.read()
         
-        if parameter_choice == 59:
+        if parameter_choice == 12:
+            processed_image = rule_of_thirds_preprocessor.process(data_input=Image.open(file.file))
+            byte_buffer = io.BytesIO()
+            processed_image.save(byte_buffer, format="JPEG") 
+            image_data = byte_buffer.getvalue()
+            choosen_param = "Rule of Thirds"
+            instruction = f"Analyze the image for the 'rule of thirds' parameter and provide the result as a JSON object."
+            model = my_configs.get_rot_model_path()
+        
+        elif parameter_choice == 59:
             processed_image = golden_rectangle_preprocessor.process(data_input=Image.open(file.file))
             byte_buffer = io.BytesIO()
             processed_image.save(byte_buffer, format="JPEG") 
             image_data = byte_buffer.getvalue()
             choosen_param = "Golden Rectangle"
-            instruction = f"Analyze the image for the golden rectangle parameter and provide the result as a JSON object."
+            instruction = f"Analyze the image for the 'golden rectangle' parameter and provide the result as a JSON object."
             model = my_configs.get_gr_model_path()
             
         elif parameter_choice < 36:
