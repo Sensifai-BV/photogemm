@@ -7,6 +7,7 @@ import io
 import time
 import os
 import httpx
+import pickle
 import asyncio
 from PIL import Image
 from openai import OpenAI
@@ -16,7 +17,8 @@ import json
 from enum import Enum, auto
 from handle_non_challenging_request import NonChallegingHandler
 from parameters_naming import ModelConfig
- 
+from preprcessors import GoldenRectangle
+
 # SAVE_DIR = './uploaded _photos'
 
 lora_params = [
@@ -58,6 +60,9 @@ client = OpenAI(
 
 non_challenging_handler = NonChallegingHandler()
 my_configs = ModelConfig()
+
+golden_rectangle_preprocessor = GoldenRectangle()
+
 
 def image_to_base64_data_url(image: Image.Image, format: str = "JPEG") -> str:
     """Convert PIL Image to base64 data URL"""
@@ -151,13 +156,24 @@ async def analyze_image_single(
     56. Soft Focus
     57. Digital Noise\n
     58. Hue
+    59. Golden Rectangle
     """
     try:
         if not file.content_type or not file.content_type.startswith('image/'):
             raise HTTPException(status_code=400, detail="File must be an image")
         
-
-        if parameter_choice < 36:
+        image_data = await file.read()
+        
+        if parameter_choice == 59:
+            processed_image = golden_rectangle_preprocessor.process(data_input=Image.open(file.file))
+            byte_buffer = io.BytesIO()
+            processed_image.save(byte_buffer, format="JPEG") 
+            image_data = byte_buffer.getvalue()
+            choosen_param = "Golden Rectangle"
+            instruction = f"Analyze the image for the golden rectangle parameter and provide the result as a JSON object."
+            model = my_configs.get_gr_model_path()
+            
+        elif parameter_choice < 36:
             instruction, choosen_param = non_challenging_handler(parameter_choice)
             model = my_configs.get_base_model_path()
         
@@ -176,7 +192,6 @@ async def analyze_image_single(
                 instruction = f"Analyze the image for the {choosen_param} parameter and provide the result as a JSON object."
                 model = my_configs.get_scoring_lora_path()
         
-        image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         
         if image.mode != 'RGB':
@@ -314,64 +329,7 @@ async def analyze_image_multiple(
             else:  # 47-57
                 scoring_params.append(param)
         
-        # # Helper function for single base parameter call
-        # async def call_base_model(param):
-        #     """Call base model for a single parameter"""
-        #     instruction, param_name = non_challenging_handler(param)
-        #     model_path = my_configs.get_base_model_path()
-            
-        #     logger.info(f"Calling base model for parameter: {param_name}")
-        #     logger.info(f"Instruction: {instruction[:100]}...")
-            
-        #     chat_response = client.chat.completions.create(
-        #         model=model_path,
-        #         messages=[{
-        #             "role": "user",
-        #             "content": [
-        #                 {"type": "text", "text": instruction},
-        #                 {
-        #                     "type": "image_url",
-        #                     "image_url": {
-        #                         "url": image_data_url
-        #                     },
-        #                     "uuid": file.filename or "uploaded_image"
-        #                 },
-        #             ],
-        #         }],
-        #         temperature=0
-        #     )
-            
-        #     response_content = chat_response.choices[0].message.content
-        #     logger.info(f"Received response for {param_name}")
-            
-        #     try:
-        #         if "```json" in response_content:
-        #             json_str = response_content.split("```json")[1].split("```")[0].strip()
-        #         elif "```" in response_content:
-        #             json_str = response_content.split("```")[1].strip()
-        #         else:
-        #             json_str = response_content
-                
-        #         parsed_response = json.loads(json_str)
-        #         return {
-        #             "group": "base_model",
-        #             "model": model_path,
-        #             "parameter": param_name,
-        #             "parameter_index": param,
-        #             "analysis": parsed_response,
-        #             "raw_response": response_content
-        #         }
-        #     except json.JSONDecodeError:
-        #         return {
-        #             "group": "base_model",
-        #             "model": model_path,
-        #             "parameter": param_name,
-        #             "parameter_index": param,
-        #             "raw_response": response_content,
-        #             "note": "Response could not be parsed as JSON"
-        #         }
         
-        # Helper function for batched base model calls
         async def call_base_model_batch(params_batch):
             """Call base model for a batch of k parameters"""
             model_path = my_configs.get_base_model_path()
