@@ -1,7 +1,7 @@
 import json
 
 
-PARAMETERS_PATH = "/home/ubuntu/parsa/vllm_inference/test002/filtered_parameters.json"
+PARAMETERS_PATH = "./filtered_parameters.json"
 NON_CHALLENGING_PARAMS = [
 "Minimizing Distractions",
 "Subtle Complexity",
