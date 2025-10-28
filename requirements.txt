@@ -1,0 +1,6 @@
+vllm
+fastapi
+uvicorn
+httpx
+Pillow
+openai
