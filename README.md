@@ -14,6 +14,9 @@ conda activate vllm_env
 pip install -r requirements.txt
 ```
 
+## Copy Lora models
+Copy all lora models in lora_models directory
+
 ## Run Vllm engine
 This repo includes both vllm engine and main app. the vllm engine which will run your models on the port 8000 became loaded by:
 
