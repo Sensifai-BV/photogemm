@@ -171,8 +171,7 @@ async def analyze_image_single(
             byte_buffer = io.BytesIO()
             processed_image.save(byte_buffer, format="PNG") 
             image_data = byte_buffer.getvalue()
-            choosen_param = "Rule of Thirds"
-            instruction = f"Analyze the image for the 'rule of thirds' parameter and provide the result as a JSON object."
+            instruction, choosen_param = non_challenging_handler(parameter_choice)
             model = my_configs.get_rot_model_path()
         
         elif parameter_choice == 59:
