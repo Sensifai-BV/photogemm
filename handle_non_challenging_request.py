@@ -38,6 +38,9 @@ NON_CHALLENGING_PARAMS = [
 "Target Audience",
 "Detailed Emotional Impact",
 "ColorMode",
+"Symmetrical Balance",
+"Lens Flare",
+"Haze Presence",
 ]
 
 

@@ -177,13 +177,17 @@ async def analyze_image_single(
         elif parameter_choice == 59:
             processed_image = golden_rectangle_preprocessor.process(data_input=Image.open(file.file))
             byte_buffer = io.BytesIO()
-            processed_image.save(byte_buffer, format="PNG") 
+            processed_image.save(byte_buffer, format="PNG")
             image_data = byte_buffer.getvalue()
             choosen_param = "Golden Rectangle"
             instruction = f"Analyze the image for the 'golden rectangle' parameter and provide the result as a JSON object."
             model = my_configs.get_gr_model_path()
             
-        elif parameter_choice < 36:
+        elif parameter_choice < 36 or parameter_choice == 46 or parameter_choice == 42:
+            # if parameter_choice == 40: parameter_choice = 36
+            if parameter_choice == 46: parameter_choice = 37
+            if parameter_choice == 42: parameter_choice = 38
+            
             instruction, choosen_param = non_challenging_handler(parameter_choice)
             model = my_configs.get_base_model_path()
         
