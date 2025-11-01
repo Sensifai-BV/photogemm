@@ -6,4 +6,4 @@ vllm serve google/gemma-3-4b-it \
                    my_lora_boolean=./lora_models/train_2025-10-12-11-16-24-bool2 \
                    my_scoring_lora=./lora_models/train_2025-10-15-06-00-49-finale1 \
                    my_gr_lora=./lora_models/train_2025-10-27-10-27-21-golden-rectangle \
-                   my_rot_lora=./lora_models/train_2025-10-28-09-11-10-rot
+                   my_rot_lora=./lora_models/train_2025-10-30-07-38-56-rot2
