@@ -9,7 +9,7 @@ services:
       - "8080:8080"
     
     volumes:
-      - /path/on/your/server/to/models:/models
+      - $MODEL_PATH$:/models
       
     working_dir: /built-llama/build/bin
     
