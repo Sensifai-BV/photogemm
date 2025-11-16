@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  photogemm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my-gemma-photogemm
+    container_name: photogemm
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    command:
+      [
+        "vllm", "serve", "google/gemma-3-4b-it",
+        "--chat-template", "tool_chat_template_gemma3_pythonic.jinja",
+        "--enable-lora",
+        "--max-lora-rank", "64",
+        "--lora-modules",
+        "my_gemma_lora=./lora_models/train_2025-10-04-12-58-31,my_lora_boolean=./lora_models/train_2025-10-12-11-16-24-bool2,my_scoring_lora=./lora_models/train_2025-10-15-06-00-49-finale1,my_gr_lora=./lora_models/train_2025-10-27-10-27-21-golden-rectangle,my_rot_lora=./lora_models/train_2025-10-30-07-38-56-rot2"
+      ]
