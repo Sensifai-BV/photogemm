@@ -37,6 +37,8 @@ docker compose -f docker-compose-photogemm.yml up -d
 
 This will build the image and run the vllm engine on the 8000 port of your LM.
 
+Note that you should insert the path of your lora models in the final line of the docker compose file.
+
 ## Run PhotogemmQ
 
 To run the quantized version of Photogemm which is named PhotogemmQ, you should build and run it using llamacpp. Since llamacpp does not compativle with the all versions of cuda and you should face cuda mismatch, there is a specific image to run llamacpp. In that image llamacpp is built and is ready to be used.
