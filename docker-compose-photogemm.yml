@@ -1,26 +1,40 @@
-version: "3.8"
+version: "3.9"
 
 services:
   photogemm:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile2
     image: my-gemma-photogemm
     container_name: photogemm
     ports:
       - "8000:8000"
     restart: unless-stopped
+    
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=$HF_TOKEN_GEMMA34B$
+      
     deploy:
       resources:
         reservations:
           devices:
             - capabilities: [gpu]
+    
+    # Using YAML list syntax for better readability and safety
+
     command:
-      [
-        "vllm", "serve", "google/gemma-3-4b-it",
-        "--chat-template", "tool_chat_template_gemma3_pythonic.jinja",
-        "--enable-lora",
-        "--max-lora-rank", "64",
-        "--lora-modules",
-        "my_gemma_lora=./lora_models/train_2025-10-04-12-58-31,my_lora_boolean=./lora_models/train_2025-10-12-11-16-24-bool2,my_scoring_lora=./lora_models/train_2025-10-15-06-00-49-finale1,my_gr_lora=./lora_models/train_2025-10-27-10-27-21-golden-rectangle,my_rot_lora=./lora_models/train_2025-10-30-07-38-56-rot2"
-      ]
+      # 1. Start DIRECTLY with the model name (It acts as the first argument to the hidden 'vllm serve')
+      - google/gemma-3-4b-it
+      # 2. Then your flags
+      - --chat-template
+      - tool_chat_template_gemma3_pythonic.jinja
+      - --enable-lora
+      - --max-lora-rank
+      - "64"
+      - --lora-modules
+      # 3. Your LoRA modules (Keep them split like this!)
+      - my_gemma_lora=./lora_models/train_2025-10-04-12-58-31
+      - my_lora_boolean=./lora_models/train_2025-10-12-11-16-24-bool2
+      - my_scoring_lora=./lora_models/train_2025-10-15-06-00-49-finale1
+      - my_gr_lora=./lora_models/train_2025-10-27-10-27-21-golden-rectangle
+      - my_rot_lora=./lora_models/train_2025-10-28-09-11-10-rot
